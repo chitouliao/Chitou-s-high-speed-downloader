@@ -46,7 +46,7 @@ def download(url: str, file_name: str) -> None:
         _headers['Range'] = f'bytes={start}-{end}'
         response = session.get(url, headers=_headers, stream=True)
 
-        chunk_size = 128
+        chunk_size = 65536
         chunks = []
         for chunk in response.iter_content(chunk_size=chunk_size):
             # 暂存获取的响应
