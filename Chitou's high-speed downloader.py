@@ -17,7 +17,7 @@ KB = 1024
 
 
 def get_file_size(url: str, raise_error: bool = False) -> int:
-
+    headers = {"user-agent":"Mizilla/5.0"}
     response = requests.head(url)
     file_size = response.headers.get('Content-Length')
     if file_size is None:
@@ -46,7 +46,7 @@ def download(url: str, file_name: str) -> None:
         _headers['Range'] = f'bytes={start}-{end}'
         response = session.get(url, headers=_headers, stream=True)
 
-        chunk_size = 65536
+        chunk_size = 4194304
         chunks = []
         for chunk in response.iter_content(chunk_size=chunk_size):
             # 暂存获取的响应
@@ -70,7 +70,7 @@ def download(url: str, file_name: str) -> None:
     print(f'分块数：{len(parts)}')
 
     #进度条
-    bar = tqdm(total=file_size, desc=f'下载文件：{file_name}')
+    bar = tqdm(total=file_size, desc=f'下载文件：{file_name}',leave=True,ncols=125,unit_scale=True)
     for part in parts:
         start, end = part
         start_download(start, end)
@@ -81,7 +81,6 @@ def download(url: str, file_name: str) -> None:
 
 if "__main__" == __name__:
     multitasking.set_max_threads(multitasking.config["CPU_CORES"] * 100)
-    print("本下载器不可下载exe等文件因为我不敢保证可以下到可以运行的exe")
     url = input("下载链接:")
     file_name = ""
     for i in range(len(url)):
